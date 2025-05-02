@@ -1,11 +1,8 @@
-import React from 'react'
-import styles from './Search.module.css'
+import React from 'react';
+import styles from './Search.module.css';
 
 const Search = ({ onInputChange, onSearchClick }) => {
-
-  const handleChange = (e) => {
-    onInputChange(e.target.value);
-  };
+  const handleChange = (e) => onInputChange(e.target.value);
 
   const handleSearch = (e) => {
     e.preventDefault();
@@ -14,10 +11,10 @@ const Search = ({ onInputChange, onSearchClick }) => {
 
   return (
     <form className={styles['search-container']} onSubmit={handleSearch}>
-      <input type="text" onChange={handleChange} placeholder='Type here to search for your Pokémon'/>
-      <button>Search</button>
+      <input type="text" onChange={handleChange} placeholder='Search Pokémon...' />
+      <button type="submit">Search</button>
     </form>
-  )
-}
+  );
+};
 
 export default Search;

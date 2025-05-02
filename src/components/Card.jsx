@@ -1,34 +1,43 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import Tags from "./Tags";
 import styles from "./Card.module.css";
+import { FavoritesContext } from "../context/FavoriteContext";
 
-const Card = (props) => {
+const Card = ({ data }) => {
   const [imageUrl, setImageUrl] = useState("");
   const [types, setTypes] = useState([]);
+
+  const { favorites, toggleFavorite } = useContext(FavoritesContext);
+  const isFav = favorites.some((p) => p.name === data.name);
 
   useEffect(() => {
     const fetchPokeDetail = async () => {
       try {
-        const response = await fetch(props.data.url);
-        const data = await response.json();
-        setImageUrl(data.sprites.back_default);
-        setTypes(data.types.map((item) => item.type.name));
+        const response = await fetch(data.url);
+        const pokeData = await response.json();
+        setImageUrl(pokeData.sprites.front_default);
+        setTypes(pokeData.types.map((t) => t.type.name));
       } catch (error) {
         console.error("Error fetching Pokémon data:", error);
       }
     };
 
     fetchPokeDetail();
-  }, [props.data.url]);
+  }, [data.url]);
+
+  const handleFavClick = (e) => {
+    e.preventDefault(); // Prevent navigating if inside a <Link>
+    toggleFavorite({ ...data, image: imageUrl, types });
+  };
 
   return (
     <div className={styles["poke-card"]}>
-      <h2 className={styles["card-title"]}>{props.data.name}</h2>
+      <h2 className={styles["card-title"]}>{data.name}</h2>
       {imageUrl && (
         <img
-          style={{ height: "150px", width: "150px" }}
           src={imageUrl}
-          alt={props.data.name}
+          alt={data.name}
+          style={{ height: "150px", width: "150px" }}
         />
       )}
       <div className={styles["tags-container"]}>
@@ -37,6 +46,12 @@ const Card = (props) => {
           <Tags key={index} type={type} />
         ))}
       </div>
+      <button
+        className={`${styles["add-remove"]} ${isFav ? styles["remove"] : styles["add"]}`}
+        onClick={handleFavClick}
+      >
+        {isFav ? "Remove from Favourites" : "Add to Favourites"}
+      </button>
     </div>
   );
 };
